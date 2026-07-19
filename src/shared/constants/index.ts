@@ -11,3 +11,10 @@ export const TIMEOUTS = {
   dnsMs: 5000,
   portScanConnectMs: 1000
 } as const
+
+export const LAN_SWEEP = {
+  concurrency: 32,
+  minPrefixLength: 24,
+  pingTimeoutMs: 800,
+  reverseDnsTimeoutMs: 1200
+} as const

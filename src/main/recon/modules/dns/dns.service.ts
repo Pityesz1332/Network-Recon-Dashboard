@@ -41,14 +41,17 @@ async function resolveHostname(target: string): Promise<DNSResultData> {
   }
 }
 
-async function reverseLookupIp(target: string): Promise<DNSResultData> {
-  let hostname: string | null = null
+export async function reverseDns(ip: string): Promise<string | null> {
   try {
-    const names = await dns.reverse(target)
-    hostname = names[0] ?? null
+    const names = await dns.reverse(ip)
+    return names[0] ?? null
   } catch {
-    hostname = null
+    return null
   }
+}
+
+async function reverseLookupIp(target: string): Promise<DNSResultData> {
+  const hostname = await reverseDns(target)
 
   return {
     addresses: [{ type: isIP(target) === 6 ? 'AAAA' : 'A', address: target }],

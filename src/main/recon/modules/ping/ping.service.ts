@@ -3,14 +3,21 @@ import { platform } from 'node:os'
 import type { PingResultData } from '@shared/types/recon'
 import type { PingStats } from './types'
 
-function buildArgs(target: string): string[] {
+export interface PingArgsOptions {
+  count?: number
+  timeoutSec?: number
+}
+
+export function buildArgs(target: string, opts: PingArgsOptions = {}): string[] {
+  const count = opts.count ?? 4
+  const timeoutSec = opts.timeoutSec ?? 2
   switch (platform()) {
     case 'win32':
-      return ['-n', '4', '-w', '2000', target]
+      return ['-n', String(count), '-w', String(timeoutSec * 1000), target]
     case 'darwin':
-      return ['-c', '4', '-t', '2', target]
+      return ['-c', String(count), '-t', String(timeoutSec), target]
     default:
-      return ['-c', '4', '-W', '2', target]
+      return ['-c', String(count), '-W', String(timeoutSec), target]
   }
 }
 
