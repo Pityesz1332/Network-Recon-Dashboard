@@ -2,6 +2,7 @@ export interface LanDevice {
   ip: string
   mac: string | null
   hostname: string | null
+  vendor: string | null
   alive: boolean
   rttMs: number | null
 }

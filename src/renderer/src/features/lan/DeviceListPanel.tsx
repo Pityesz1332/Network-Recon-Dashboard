@@ -39,6 +39,7 @@ export function DeviceListPanel(): React.JSX.Element {
             <th className="py-2 font-medium">IP</th>
             <th className="py-2 font-medium">MAC</th>
             <th className="py-2 font-medium">Hostname</th>
+            <th className="py-2 font-medium">Vendor</th>
             <th className="py-2 font-medium">Status</th>
             <th className="py-2 font-medium">RTT</th>
           </tr>
@@ -53,6 +54,7 @@ export function DeviceListPanel(): React.JSX.Element {
               <td className="py-2">{device.ip}</td>
               <td className="py-2 text-muted-foreground">{device.mac ?? '—'}</td>
               <td className="py-2 text-muted-foreground">{device.hostname ?? '—'}</td>
+              <td className="py-2 text-muted-foreground">{device.vendor ?? '—'}</td>
               <td className="py-2">
                 <Badge variant={device.alive ? 'default' : 'destructive'}>
                   {device.alive ? 'Alive' : 'Unreachable'}

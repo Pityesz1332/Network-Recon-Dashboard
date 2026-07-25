@@ -5,6 +5,7 @@ import type { LanDevice } from '@shared/types/lan'
 import { buildArgs } from '../recon/modules/ping/ping.service'
 import { reverseDns } from '../recon/modules/dns/dns.service'
 import { runWithConcurrency } from '../utils/concurrency'
+import { lookupVendor } from './oui.service'
 
 function parseRttMs(raw: string): number | null {
   const winMatch = raw.match(/time[=<](\d+)\s*ms/i)
@@ -107,8 +108,9 @@ export async function sweepSubnet(
         )
       ])
       if (signal.aborted) return
+      const mac = arpMap.get(ip) ?? null
       count++
-      onDeviceFound({ ip, mac: arpMap.get(ip) ?? null, hostname, alive: true, rttMs })
+      onDeviceFound({ ip, mac, hostname, vendor: lookupVendor(mac), alive: true, rttMs })
     })
   )
 
