@@ -14,7 +14,7 @@ export function ScanPanel(): React.JSX.Element {
   const canScan = target.trim().length > 0 && !validationError && !isScanning
 
   return (
-    <div className="border-b border-border px-6 py-4">
+    <div className="border-b border-border/60 bg-card/20 px-6 py-4 backdrop-blur-sm">
       <form
         className="flex items-start gap-3"
         onSubmit={(e) => {

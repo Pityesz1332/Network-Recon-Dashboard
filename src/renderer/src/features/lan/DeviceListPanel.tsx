@@ -33,40 +33,42 @@ export function DeviceListPanel(): React.JSX.Element {
 
   return (
     <div className="flex-1 overflow-y-auto px-6 py-4">
-      <table className="w-full text-left text-sm">
-        <thead>
-          <tr className="border-b border-border text-xs text-muted-foreground">
-            <th className="py-2 font-medium">IP</th>
-            <th className="py-2 font-medium">MAC</th>
-            <th className="py-2 font-medium">Hostname</th>
-            <th className="py-2 font-medium">Vendor</th>
-            <th className="py-2 font-medium">Status</th>
-            <th className="py-2 font-medium">RTT</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((device) => (
-            <tr
-              key={device.ip}
-              className="cursor-pointer border-b border-border/50 hover:bg-accent"
-              onClick={() => selectDevice(device)}
-            >
-              <td className="py-2">{device.ip}</td>
-              <td className="py-2 text-muted-foreground">{device.mac ?? '—'}</td>
-              <td className="py-2 text-muted-foreground">{device.hostname ?? '—'}</td>
-              <td className="py-2 text-muted-foreground">{device.vendor ?? '—'}</td>
-              <td className="py-2">
-                <Badge variant={device.alive ? 'default' : 'destructive'}>
-                  {device.alive ? 'Alive' : 'Unreachable'}
-                </Badge>
-              </td>
-              <td className="py-2 text-muted-foreground">
-                {device.rttMs !== null ? `${device.rttMs} ms` : '—'}
-              </td>
+      <div className="overflow-hidden rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm">
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-border/60 bg-muted/30 text-xs text-muted-foreground">
+              <th className="px-3 py-2.5 font-medium">IP</th>
+              <th className="px-3 py-2.5 font-medium">MAC</th>
+              <th className="px-3 py-2.5 font-medium">Hostname</th>
+              <th className="px-3 py-2.5 font-medium">Vendor</th>
+              <th className="px-3 py-2.5 font-medium">Status</th>
+              <th className="px-3 py-2.5 font-medium">RTT</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sorted.map((device) => (
+              <tr
+                key={device.ip}
+                className="cursor-pointer border-b border-border/40 transition-colors last:border-b-0 hover:bg-accent/60"
+                onClick={() => selectDevice(device)}
+              >
+                <td className="px-3 py-2.5 font-medium">{device.ip}</td>
+                <td className="px-3 py-2.5 text-muted-foreground">{device.mac ?? '—'}</td>
+                <td className="px-3 py-2.5 text-muted-foreground">{device.hostname ?? '—'}</td>
+                <td className="px-3 py-2.5 text-muted-foreground">{device.vendor ?? '—'}</td>
+                <td className="px-3 py-2.5">
+                  <Badge variant={device.alive ? 'default' : 'destructive'}>
+                    {device.alive ? 'Alive' : 'Unreachable'}
+                  </Badge>
+                </td>
+                <td className="px-3 py-2.5 text-muted-foreground">
+                  {device.rttMs !== null ? `${device.rttMs} ms` : '—'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

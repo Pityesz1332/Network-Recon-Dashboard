@@ -42,17 +42,17 @@ function StatusBadge({ status }: { status: ReconStatus }): React.JSX.Element {
 
 function ResultBody({ result }: { result: ReconResult }): React.JSX.Element {
   if (result.status === 'error') {
-    return <p className="text-sm text-destructive">{result.error}</p>
+    return <p className="text-xs text-destructive">{result.error}</p>
   }
 
   if (result.status !== 'success' || !result.data) {
-    return <p className="text-sm text-muted-foreground">Waiting to run…</p>
+    return <p className="text-xs text-muted-foreground">Waiting to run…</p>
   }
 
   if (result.moduleId === 'ping') {
     const d = result.data
     return (
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+      <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
         <dt className="text-muted-foreground">Status</dt>
         <dd>{d.alive ? 'Alive' : 'Unreachable'}</dd>
         <dt className="text-muted-foreground">Packet loss</dt>
@@ -66,7 +66,7 @@ function ResultBody({ result }: { result: ReconResult }): React.JSX.Element {
   if (result.moduleId === 'dns') {
     const d = result.data
     return (
-      <div className="space-y-1 text-sm">
+      <div className="space-y-1 text-xs">
         {d.hostname && (
           <p>
             <span className="text-muted-foreground">PTR: </span>
@@ -91,11 +91,11 @@ function ResultBody({ result }: { result: ReconResult }): React.JSX.Element {
 
   const d = result.data
   return (
-    <div className="text-sm">
+    <div className="text-xs">
       <p className="text-muted-foreground">
         {d.openCount} open / {d.scannedCount} scanned
       </p>
-      <ul className="mt-1 flex flex-wrap gap-1">
+      <ul className="mt-1.5 flex flex-wrap gap-1">
         {d.ports
           .filter((p) => p.open)
           .map((p) => (
@@ -117,22 +117,24 @@ export function ReconCard({ moduleId, result }: ReconCardProps): React.JSX.Eleme
   const Icon = MODULE_ICONS[moduleId]
 
   return (
-    <Card>
-      <CardHeader className="flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Icon className="size-4 text-muted-foreground" />
+    <Card className="gap-2.5 py-3.5">
+      <CardHeader className="flex-row items-center justify-between gap-2 px-3.5">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/15 text-primary">
+            <Icon className="size-3.5" />
+          </span>
           {MODULE_TITLES[moduleId]}
         </CardTitle>
         {result && <StatusBadge status={result.status} />}
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3.5">
         {result?.durationMs !== null && result?.durationMs !== undefined && (
-          <p className="mb-2 text-xs text-muted-foreground">{result.durationMs} ms</p>
+          <p className="mb-2 text-[11px] text-muted-foreground">{result.durationMs} ms</p>
         )}
         {result ? (
           <ResultBody result={result} />
         ) : (
-          <p className="text-sm text-muted-foreground">Idle</p>
+          <p className="text-xs text-muted-foreground">Idle</p>
         )}
       </CardContent>
     </Card>

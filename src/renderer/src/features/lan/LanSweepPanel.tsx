@@ -9,7 +9,7 @@ export function LanSweepPanel(): React.JSX.Element {
   const cancelSweep = useLanStore((s) => s.cancelSweep)
 
   return (
-    <div className="border-b border-border px-6 py-4">
+    <div className="border-b border-border/60 bg-card/20 px-6 py-4 backdrop-blur-sm">
       <div className="flex items-start gap-3">
         <Button type="button" disabled={isSweeping} onClick={() => void startSweep()}>
           {isSweeping && <Loader2 className="animate-spin" />}

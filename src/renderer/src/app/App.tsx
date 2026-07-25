@@ -34,7 +34,7 @@ function App(): React.JSX.Element {
   }, [])
 
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground">
+    <div className="app-shell flex h-screen flex-col text-foreground">
       <TopBar />
       {mode === 'wan' ? (
         <>

@@ -10,7 +10,7 @@ export function NetworkInfoPanel(): React.JSX.Element | null {
   return (
     <Card className="mx-6 mt-4">
       <CardHeader>
-        <CardTitle>Local Network</CardTitle>
+        <CardTitle className="text-sm">Local Network</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
         <div>

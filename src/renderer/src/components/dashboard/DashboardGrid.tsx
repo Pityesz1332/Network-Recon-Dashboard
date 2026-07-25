@@ -6,7 +6,7 @@ export function DashboardGrid(): React.JSX.Element {
   const results = useScanStore((s) => s.results)
 
   return (
-    <div className="grid flex-1 grid-cols-1 gap-4 overflow-y-auto p-6 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid flex-1 auto-rows-min grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3 overflow-y-auto p-4">
       {RECON_MODULE_IDS.map((id) => (
         <ReconCard key={id} moduleId={id} result={results[id] ?? null} />
       ))}
