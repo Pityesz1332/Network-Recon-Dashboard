@@ -8,6 +8,7 @@ import { PingModule } from '../recon/modules/ping/PingModule'
 import { DNSModule } from '../recon/modules/dns/DNSModule'
 import { PortScanModule } from '../recon/modules/portscan/PortScanModule'
 import { WhoisModule } from '../recon/modules/whois/WhoisModule'
+import { AsnModule } from '../recon/modules/asn/AsnModule'
 import { logger } from '../utils/logger'
 
 const registry = new ModuleRegistry()
@@ -15,6 +16,7 @@ registry.register(PingModule)
 registry.register(DNSModule)
 registry.register(new PortScanModule())
 registry.register(WhoisModule)
+registry.register(AsnModule)
 
 const engine = new ReconEngine(registry)
 

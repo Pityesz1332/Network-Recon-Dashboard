@@ -3,6 +3,7 @@ import {
   FileSearch,
   Globe,
   Loader2,
+  Network,
   Radar,
   Wifi,
   XCircle,
@@ -16,14 +17,16 @@ const MODULE_ICONS: Record<ReconModuleId, LucideIcon> = {
   ping: Wifi,
   dns: Globe,
   portscan: Radar,
-  whois: FileSearch
+  whois: FileSearch,
+  asn: Network
 }
 
 const MODULE_TITLES: Record<ReconModuleId, string> = {
   ping: 'Ping',
   dns: 'DNS Lookup',
   portscan: 'Port Scan',
-  whois: 'WHOIS'
+  whois: 'WHOIS',
+  asn: 'ASN Lookup'
 }
 
 function StatusBadge({ status }: { status: ReconStatus }): React.JSX.Element {
@@ -120,42 +123,62 @@ function ResultBody({ result }: { result: ReconResult }): React.JSX.Element {
     )
   }
 
+  if (result.moduleId === 'whois') {
+    const d = result.data
+    const hasFields = d.registrar || d.createdDate || d.expiresDate || d.nameServers.length > 0
+    return (
+      <div className="space-y-1 text-xs">
+        {d.registrar && (
+          <p>
+            <span className="text-muted-foreground">Registrar: </span>
+            {d.registrar}
+          </p>
+        )}
+        {d.createdDate && (
+          <p>
+            <span className="text-muted-foreground">Created: </span>
+            {d.createdDate}
+          </p>
+        )}
+        {d.expiresDate && (
+          <p>
+            <span className="text-muted-foreground">Expires: </span>
+            {d.expiresDate}
+          </p>
+        )}
+        {d.nameServers.length > 0 && (
+          <div>
+            <span className="text-muted-foreground">Name servers:</span>
+            <ul className="mt-0.5 space-y-0.5">
+              {d.nameServers.map((ns) => (
+                <li key={ns}>{ns}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {!hasFields && (
+          <p className="text-muted-foreground">No structured data — server: {d.server}</p>
+        )}
+      </div>
+    )
+  }
+
   const d = result.data
-  const hasFields = d.registrar || d.createdDate || d.expiresDate || d.nameServers.length > 0
   return (
-    <div className="space-y-1 text-xs">
-      {d.registrar && (
-        <p>
-          <span className="text-muted-foreground">Registrar: </span>
-          {d.registrar}
-        </p>
-      )}
-      {d.createdDate && (
-        <p>
-          <span className="text-muted-foreground">Created: </span>
-          {d.createdDate}
-        </p>
-      )}
-      {d.expiresDate && (
-        <p>
-          <span className="text-muted-foreground">Expires: </span>
-          {d.expiresDate}
-        </p>
-      )}
-      {d.nameServers.length > 0 && (
-        <div>
-          <span className="text-muted-foreground">Name servers:</span>
-          <ul className="mt-0.5 space-y-0.5">
-            {d.nameServers.map((ns) => (
-              <li key={ns}>{ns}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {!hasFields && (
-        <p className="text-muted-foreground">No structured data — server: {d.server}</p>
-      )}
-    </div>
+    <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+      <dt className="text-muted-foreground">ASN</dt>
+      <dd>{d.asn !== null ? `AS${d.asn}` : '—'}</dd>
+      <dt className="text-muted-foreground">Org</dt>
+      <dd className="truncate" title={d.asName ?? undefined}>
+        {d.asName ?? '—'}
+      </dd>
+      <dt className="text-muted-foreground">BGP prefix</dt>
+      <dd>{d.bgpPrefix ?? '—'}</dd>
+      <dt className="text-muted-foreground">Country</dt>
+      <dd>{d.countryCode ?? '—'}</dd>
+      <dt className="text-muted-foreground">Registry</dt>
+      <dd>{d.registry ?? '—'}</dd>
+    </dl>
   )
 }
 

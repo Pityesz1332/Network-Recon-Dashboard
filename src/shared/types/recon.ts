@@ -1,4 +1,4 @@
-export type ReconModuleId = 'ping' | 'dns' | 'portscan' | 'whois'
+export type ReconModuleId = 'ping' | 'dns' | 'portscan' | 'whois' | 'asn'
 
 export type ReconStatus = 'idle' | 'running' | 'success' | 'error'
 
@@ -46,11 +46,26 @@ export interface WhoisResultData {
   nameServers: string[]
 }
 
+export interface AsnResultData {
+  queriedIp: string
+  asn: number | null
+  asName: string | null
+  bgpPrefix: string | null
+  countryCode: string | null
+  registry: string | null
+  allocatedDate: string | null
+  raw: string
+}
+
 export type PingReconResult = ReconResultBase<'ping', PingResultData>
 export type DNSReconResult = ReconResultBase<'dns', DNSResultData>
 export type PortScanReconResult = ReconResultBase<'portscan', PortScanResultData>
 export type WhoisReconResult = ReconResultBase<'whois', WhoisResultData>
+export type AsnReconResult = ReconResultBase<'asn', AsnResultData>
 
-// A true discriminated union: moduleId is a distinct literal per branch, so
-// narrowing on it (e.g. `if (result.moduleId === 'ping')`) also narrows `data`.
-export type ReconResult = PingReconResult | DNSReconResult | PortScanReconResult | WhoisReconResult
+export type ReconResult =
+  | PingReconResult
+  | DNSReconResult
+  | PortScanReconResult
+  | WhoisReconResult
+  | AsnReconResult
