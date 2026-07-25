@@ -8,7 +8,8 @@ import * as reconApi from '../api/recon'
 const MODULE_NAMES: Record<ReconModuleId, string> = {
   ping: 'Ping',
   dns: 'DNS Lookup',
-  portscan: 'Port Scan'
+  portscan: 'Port Scan',
+  whois: 'WHOIS'
 }
 
 function idleResult(moduleId: ReconModuleId): ReconResult {

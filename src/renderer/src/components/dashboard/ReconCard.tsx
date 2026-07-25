@@ -1,4 +1,13 @@
-import { CheckCircle2, Globe, Loader2, Radar, Wifi, XCircle, type LucideIcon } from 'lucide-react'
+import {
+  CheckCircle2,
+  FileSearch,
+  Globe,
+  Loader2,
+  Radar,
+  Wifi,
+  XCircle,
+  type LucideIcon
+} from 'lucide-react'
 import { Badge } from '@renderer/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@renderer/components/ui/card'
 import type { ReconModuleId, ReconResult, ReconStatus } from '@renderer/features/scan/scan.types'
@@ -6,13 +15,15 @@ import type { ReconModuleId, ReconResult, ReconStatus } from '@renderer/features
 const MODULE_ICONS: Record<ReconModuleId, LucideIcon> = {
   ping: Wifi,
   dns: Globe,
-  portscan: Radar
+  portscan: Radar,
+  whois: FileSearch
 }
 
 const MODULE_TITLES: Record<ReconModuleId, string> = {
   ping: 'Ping',
   dns: 'DNS Lookup',
-  portscan: 'Port Scan'
+  portscan: 'Port Scan',
+  whois: 'WHOIS'
 }
 
 function StatusBadge({ status }: { status: ReconStatus }): React.JSX.Element {
@@ -89,21 +100,61 @@ function ResultBody({ result }: { result: ReconResult }): React.JSX.Element {
     )
   }
 
+  if (result.moduleId === 'portscan') {
+    const d = result.data
+    return (
+      <div className="text-xs">
+        <p className="text-muted-foreground">
+          {d.openCount} open / {d.scannedCount} scanned
+        </p>
+        <ul className="mt-1.5 flex flex-wrap gap-1">
+          {d.ports
+            .filter((p) => p.open)
+            .map((p) => (
+              <Badge key={p.port} variant="outline">
+                {p.port}
+              </Badge>
+            ))}
+        </ul>
+      </div>
+    )
+  }
+
   const d = result.data
+  const hasFields = d.registrar || d.createdDate || d.expiresDate || d.nameServers.length > 0
   return (
-    <div className="text-xs">
-      <p className="text-muted-foreground">
-        {d.openCount} open / {d.scannedCount} scanned
-      </p>
-      <ul className="mt-1.5 flex flex-wrap gap-1">
-        {d.ports
-          .filter((p) => p.open)
-          .map((p) => (
-            <Badge key={p.port} variant="outline">
-              {p.port}
-            </Badge>
-          ))}
-      </ul>
+    <div className="space-y-1 text-xs">
+      {d.registrar && (
+        <p>
+          <span className="text-muted-foreground">Registrar: </span>
+          {d.registrar}
+        </p>
+      )}
+      {d.createdDate && (
+        <p>
+          <span className="text-muted-foreground">Created: </span>
+          {d.createdDate}
+        </p>
+      )}
+      {d.expiresDate && (
+        <p>
+          <span className="text-muted-foreground">Expires: </span>
+          {d.expiresDate}
+        </p>
+      )}
+      {d.nameServers.length > 0 && (
+        <div>
+          <span className="text-muted-foreground">Name servers:</span>
+          <ul className="mt-0.5 space-y-0.5">
+            {d.nameServers.map((ns) => (
+              <li key={ns}>{ns}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {!hasFields && (
+        <p className="text-muted-foreground">No structured data — server: {d.server}</p>
+      )}
     </div>
   )
 }

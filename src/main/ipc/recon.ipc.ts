@@ -7,16 +7,18 @@ import { ReconEngine } from '../recon/engine/ReconEngine'
 import { PingModule } from '../recon/modules/ping/PingModule'
 import { DNSModule } from '../recon/modules/dns/DNSModule'
 import { PortScanModule } from '../recon/modules/portscan/PortScanModule'
+import { WhoisModule } from '../recon/modules/whois/WhoisModule'
 import { logger } from '../utils/logger'
 
 const registry = new ModuleRegistry()
 registry.register(PingModule)
 registry.register(DNSModule)
 registry.register(new PortScanModule())
+registry.register(WhoisModule)
 
 const engine = new ReconEngine(registry)
 
-// Only one scan runs at a time. Starting a new one aborts the previous
+// Only one scan runs at a time.
 let activeScanId: string | null = null
 let activeController: AbortController | null = null
 

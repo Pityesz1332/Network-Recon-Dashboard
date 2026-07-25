@@ -1,4 +1,4 @@
-export type ReconModuleId = 'ping' | 'dns' | 'portscan'
+export type ReconModuleId = 'ping' | 'dns' | 'portscan' | 'whois'
 
 export type ReconStatus = 'idle' | 'running' | 'success' | 'error'
 
@@ -36,10 +36,21 @@ export interface PortScanResultData {
   openCount: number
 }
 
+export interface WhoisResultData {
+  raw: string
+  server: string
+  registrar: string | null
+  createdDate: string | null
+  updatedDate: string | null
+  expiresDate: string | null
+  nameServers: string[]
+}
+
 export type PingReconResult = ReconResultBase<'ping', PingResultData>
 export type DNSReconResult = ReconResultBase<'dns', DNSResultData>
 export type PortScanReconResult = ReconResultBase<'portscan', PortScanResultData>
+export type WhoisReconResult = ReconResultBase<'whois', WhoisResultData>
 
 // A true discriminated union: moduleId is a distinct literal per branch, so
 // narrowing on it (e.g. `if (result.moduleId === 'ping')`) also narrows `data`.
-export type ReconResult = PingReconResult | DNSReconResult | PortScanReconResult
+export type ReconResult = PingReconResult | DNSReconResult | PortScanReconResult | WhoisReconResult
