@@ -1,4 +1,12 @@
-export type ReconModuleId = 'ping' | 'dns' | 'portscan' | 'whois' | 'asn' | 'geo' | 'traceroute'
+export type ReconModuleId =
+  | 'ping'
+  | 'dns'
+  | 'portscan'
+  | 'whois'
+  | 'asn'
+  | 'geo'
+  | 'traceroute'
+  | 'rdns'
 
 export type ReconStatus = 'idle' | 'running' | 'success' | 'error'
 
@@ -82,6 +90,18 @@ export interface TracerouteResultData {
   raw: string
 }
 
+export interface RdnsEntry {
+  ip: string
+  hostname: string | null
+}
+
+export interface RdnsResultData {
+  entries: RdnsEntry[]
+  // Whether any PTR hostname matches the original target — null when the
+  // target was already an IP, since there's no forward hostname to confirm against.
+  forwardConfirmed: boolean | null
+}
+
 export type PingReconResult = ReconResultBase<'ping', PingResultData>
 export type DNSReconResult = ReconResultBase<'dns', DNSResultData>
 export type PortScanReconResult = ReconResultBase<'portscan', PortScanResultData>
@@ -89,6 +109,7 @@ export type WhoisReconResult = ReconResultBase<'whois', WhoisResultData>
 export type AsnReconResult = ReconResultBase<'asn', AsnResultData>
 export type GeoReconResult = ReconResultBase<'geo', GeoResultData>
 export type TracerouteReconResult = ReconResultBase<'traceroute', TracerouteResultData>
+export type RdnsReconResult = ReconResultBase<'rdns', RdnsResultData>
 
 export type ReconResult =
   | PingReconResult
@@ -98,3 +119,4 @@ export type ReconResult =
   | AsnReconResult
   | GeoReconResult
   | TracerouteReconResult
+  | RdnsReconResult

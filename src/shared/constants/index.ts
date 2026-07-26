@@ -7,7 +7,8 @@ export const RECON_MODULE_IDS: ReconModuleId[] = [
   'whois',
   'asn',
   'geo',
-  'traceroute'
+  'traceroute',
+  'rdns'
 ]
 
 export const DEFAULT_SCAN_PORTS: number[] = [

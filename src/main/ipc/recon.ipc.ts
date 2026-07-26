@@ -11,6 +11,7 @@ import { WhoisModule } from '../recon/modules/whois/WhoisModule'
 import { AsnModule } from '../recon/modules/asn/AsnModule'
 import { GeoModule } from '../recon/modules/geo/GeoModule'
 import { TracerouteModule } from '../recon/modules/traceroute/TracerouteModule'
+import { RdnsModule } from '../recon/modules/rdns/RdnsModule'
 import { logger } from '../utils/logger'
 
 const registry = new ModuleRegistry()
@@ -21,6 +22,7 @@ registry.register(WhoisModule)
 registry.register(AsnModule)
 registry.register(GeoModule)
 registry.register(TracerouteModule)
+registry.register(RdnsModule)
 
 const engine = new ReconEngine(registry)
 

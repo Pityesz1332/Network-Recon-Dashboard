@@ -1,4 +1,5 @@
 import {
+  ArrowLeftRight,
   CheckCircle2,
   FileSearch,
   Globe,
@@ -22,7 +23,8 @@ const MODULE_ICONS: Record<ReconModuleId, LucideIcon> = {
   whois: FileSearch,
   asn: Network,
   geo: MapPin,
-  traceroute: Route
+  traceroute: Route,
+  rdns: ArrowLeftRight
 }
 
 const MODULE_TITLES: Record<ReconModuleId, string> = {
@@ -32,7 +34,8 @@ const MODULE_TITLES: Record<ReconModuleId, string> = {
   whois: 'WHOIS',
   asn: 'ASN Lookup',
   geo: 'Geolocation',
-  traceroute: 'Traceroute'
+  traceroute: 'Traceroute',
+  rdns: 'Reverse DNS'
 }
 
 function StatusBadge({ status }: { status: ReconStatus }): React.JSX.Element {
@@ -214,29 +217,54 @@ function ResultBody({ result }: { result: ReconResult }): React.JSX.Element {
     )
   }
 
+  if (result.moduleId === 'traceroute') {
+    const d = result.data
+    return (
+      <div className="text-xs">
+        <ul className="max-h-40 space-y-0.5 overflow-y-auto">
+          {d.hops.map((hop) => (
+            <li key={hop.hop} className="flex items-center gap-2">
+              <span className="w-4 shrink-0 text-muted-foreground">{hop.hop}</span>
+              {hop.timedOut ? (
+                <span className="text-muted-foreground">Request timed out</span>
+              ) : (
+                <>
+                  <span className="truncate">{hop.ip ?? '—'}</span>
+                  <span className="ml-auto shrink-0 text-muted-foreground">
+                    {hop.avgMs !== null ? `${hop.avgMs} ms` : '—'}
+                  </span>
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
+        {d.hops.length === 0 && <p className="text-muted-foreground">No hops recorded</p>}
+        {!d.reachedTarget && d.hops.length > 0 && (
+          <p className="mt-1.5 text-muted-foreground">Did not reach target within hop limit</p>
+        )}
+      </div>
+    )
+  }
+
   const d = result.data
   return (
     <div className="text-xs">
-      <ul className="max-h-40 space-y-0.5 overflow-y-auto">
-        {d.hops.map((hop) => (
-          <li key={hop.hop} className="flex items-center gap-2">
-            <span className="w-4 shrink-0 text-muted-foreground">{hop.hop}</span>
-            {hop.timedOut ? (
-              <span className="text-muted-foreground">Request timed out</span>
-            ) : (
-              <>
-                <span className="truncate">{hop.ip ?? '—'}</span>
-                <span className="ml-auto shrink-0 text-muted-foreground">
-                  {hop.avgMs !== null ? `${hop.avgMs} ms` : '—'}
-                </span>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-      {d.hops.length === 0 && <p className="text-muted-foreground">No hops recorded</p>}
-      {!d.reachedTarget && d.hops.length > 0 && (
-        <p className="mt-1.5 text-muted-foreground">Did not reach target within hop limit</p>
+      {d.entries.length === 0 ? (
+        <p className="text-muted-foreground">No PTR records found</p>
+      ) : (
+        <ul className="space-y-0.5">
+          {d.entries.map((e) => (
+            <li key={e.ip}>
+              <span className="text-muted-foreground">{e.ip}: </span>
+              {e.hostname ?? 'No PTR record'}
+            </li>
+          ))}
+        </ul>
+      )}
+      {d.forwardConfirmed !== null && (
+        <p className="mt-1.5 text-muted-foreground">
+          {d.forwardConfirmed ? 'Forward-confirmed match' : 'No forward-confirmed match'}
+        </p>
       )}
     </div>
   )

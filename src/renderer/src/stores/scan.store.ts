@@ -12,7 +12,8 @@ const MODULE_NAMES: Record<ReconModuleId, string> = {
   whois: 'WHOIS',
   asn: 'ASN Lookup',
   geo: 'Geolocation',
-  traceroute: 'Traceroute'
+  traceroute: 'Traceroute',
+  rdns: 'Reverse DNS'
 }
 
 function idleResult(moduleId: ReconModuleId): ReconResult {
