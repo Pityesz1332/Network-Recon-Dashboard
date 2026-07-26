@@ -1,4 +1,4 @@
-export type ReconModuleId = 'ping' | 'dns' | 'portscan' | 'whois' | 'asn' | 'geo'
+export type ReconModuleId = 'ping' | 'dns' | 'portscan' | 'whois' | 'asn' | 'geo' | 'traceroute'
 
 export type ReconStatus = 'idle' | 'running' | 'success' | 'error'
 
@@ -69,12 +69,26 @@ export interface GeoResultData {
   isp: string | null
 }
 
+export interface TracerouteHopData {
+  hop: number
+  ip: string | null
+  avgMs: number | null
+  timedOut: boolean
+}
+
+export interface TracerouteResultData {
+  hops: TracerouteHopData[]
+  reachedTarget: boolean
+  raw: string
+}
+
 export type PingReconResult = ReconResultBase<'ping', PingResultData>
 export type DNSReconResult = ReconResultBase<'dns', DNSResultData>
 export type PortScanReconResult = ReconResultBase<'portscan', PortScanResultData>
 export type WhoisReconResult = ReconResultBase<'whois', WhoisResultData>
 export type AsnReconResult = ReconResultBase<'asn', AsnResultData>
 export type GeoReconResult = ReconResultBase<'geo', GeoResultData>
+export type TracerouteReconResult = ReconResultBase<'traceroute', TracerouteResultData>
 
 export type ReconResult =
   | PingReconResult
@@ -83,3 +97,4 @@ export type ReconResult =
   | WhoisReconResult
   | AsnReconResult
   | GeoReconResult
+  | TracerouteReconResult

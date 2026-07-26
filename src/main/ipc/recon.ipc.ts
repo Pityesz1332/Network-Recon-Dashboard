@@ -10,6 +10,7 @@ import { PortScanModule } from '../recon/modules/portscan/PortScanModule'
 import { WhoisModule } from '../recon/modules/whois/WhoisModule'
 import { AsnModule } from '../recon/modules/asn/AsnModule'
 import { GeoModule } from '../recon/modules/geo/GeoModule'
+import { TracerouteModule } from '../recon/modules/traceroute/TracerouteModule'
 import { logger } from '../utils/logger'
 
 const registry = new ModuleRegistry()
@@ -19,6 +20,7 @@ registry.register(new PortScanModule())
 registry.register(WhoisModule)
 registry.register(AsnModule)
 registry.register(GeoModule)
+registry.register(TracerouteModule)
 
 const engine = new ReconEngine(registry)
 

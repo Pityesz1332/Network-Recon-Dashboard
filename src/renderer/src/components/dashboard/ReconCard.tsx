@@ -6,6 +6,7 @@ import {
   MapPin,
   Network,
   Radar,
+  Route,
   Wifi,
   XCircle,
   type LucideIcon
@@ -20,7 +21,8 @@ const MODULE_ICONS: Record<ReconModuleId, LucideIcon> = {
   portscan: Radar,
   whois: FileSearch,
   asn: Network,
-  geo: MapPin
+  geo: MapPin,
+  traceroute: Route
 }
 
 const MODULE_TITLES: Record<ReconModuleId, string> = {
@@ -29,7 +31,8 @@ const MODULE_TITLES: Record<ReconModuleId, string> = {
   portscan: 'Port Scan',
   whois: 'WHOIS',
   asn: 'ASN Lookup',
-  geo: 'Geolocation'
+  geo: 'Geolocation',
+  traceroute: 'Traceroute'
 }
 
 function StatusBadge({ status }: { status: ReconStatus }): React.JSX.Element {
@@ -186,27 +189,56 @@ function ResultBody({ result }: { result: ReconResult }): React.JSX.Element {
     )
   }
 
+  if (result.moduleId === 'geo') {
+    const d = result.data
+    const location = [d.city, d.region, d.country].filter(Boolean).join(', ')
+    return (
+      <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+        <dt className="text-muted-foreground">Location</dt>
+        <dd className="truncate" title={location || undefined}>
+          {location || '—'}
+        </dd>
+        <dt className="text-muted-foreground">Coordinates</dt>
+        <dd>
+          {d.latitude !== null && d.longitude !== null
+            ? `${d.latitude.toFixed(3)}, ${d.longitude.toFixed(3)}`
+            : '—'}
+        </dd>
+        <dt className="text-muted-foreground">Timezone</dt>
+        <dd>{d.timezone ?? '—'}</dd>
+        <dt className="text-muted-foreground">ISP</dt>
+        <dd className="truncate" title={d.isp ?? undefined}>
+          {d.isp ?? '—'}
+        </dd>
+      </dl>
+    )
+  }
+
   const d = result.data
-  const location = [d.city, d.region, d.country].filter(Boolean).join(', ')
   return (
-    <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-      <dt className="text-muted-foreground">Location</dt>
-      <dd className="truncate" title={location || undefined}>
-        {location || '—'}
-      </dd>
-      <dt className="text-muted-foreground">Coordinates</dt>
-      <dd>
-        {d.latitude !== null && d.longitude !== null
-          ? `${d.latitude.toFixed(3)}, ${d.longitude.toFixed(3)}`
-          : '—'}
-      </dd>
-      <dt className="text-muted-foreground">Timezone</dt>
-      <dd>{d.timezone ?? '—'}</dd>
-      <dt className="text-muted-foreground">ISP</dt>
-      <dd className="truncate" title={d.isp ?? undefined}>
-        {d.isp ?? '—'}
-      </dd>
-    </dl>
+    <div className="text-xs">
+      <ul className="max-h-40 space-y-0.5 overflow-y-auto">
+        {d.hops.map((hop) => (
+          <li key={hop.hop} className="flex items-center gap-2">
+            <span className="w-4 shrink-0 text-muted-foreground">{hop.hop}</span>
+            {hop.timedOut ? (
+              <span className="text-muted-foreground">Request timed out</span>
+            ) : (
+              <>
+                <span className="truncate">{hop.ip ?? '—'}</span>
+                <span className="ml-auto shrink-0 text-muted-foreground">
+                  {hop.avgMs !== null ? `${hop.avgMs} ms` : '—'}
+                </span>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+      {d.hops.length === 0 && <p className="text-muted-foreground">No hops recorded</p>}
+      {!d.reachedTarget && d.hops.length > 0 && (
+        <p className="mt-1.5 text-muted-foreground">Did not reach target within hop limit</p>
+      )}
+    </div>
   )
 }
 
