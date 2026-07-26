@@ -7,6 +7,7 @@ export type ReconModuleId =
   | 'geo'
   | 'traceroute'
   | 'rdns'
+  | 'http'
 
 export type ReconStatus = 'idle' | 'running' | 'success' | 'error'
 
@@ -102,6 +103,19 @@ export interface RdnsResultData {
   forwardConfirmed: boolean | null
 }
 
+export interface HttpHeaderEntry {
+  name: string
+  value: string
+}
+
+export interface HttpHeadersResultData {
+  url: string
+  statusCode: number
+  statusText: string
+  headers: HttpHeaderEntry[]
+  missingSecurityHeaders: string[]
+}
+
 export type PingReconResult = ReconResultBase<'ping', PingResultData>
 export type DNSReconResult = ReconResultBase<'dns', DNSResultData>
 export type PortScanReconResult = ReconResultBase<'portscan', PortScanResultData>
@@ -110,6 +124,7 @@ export type AsnReconResult = ReconResultBase<'asn', AsnResultData>
 export type GeoReconResult = ReconResultBase<'geo', GeoResultData>
 export type TracerouteReconResult = ReconResultBase<'traceroute', TracerouteResultData>
 export type RdnsReconResult = ReconResultBase<'rdns', RdnsResultData>
+export type HttpHeadersReconResult = ReconResultBase<'http', HttpHeadersResultData>
 
 export type ReconResult =
   | PingReconResult
@@ -120,3 +135,4 @@ export type ReconResult =
   | GeoReconResult
   | TracerouteReconResult
   | RdnsReconResult
+  | HttpHeadersReconResult

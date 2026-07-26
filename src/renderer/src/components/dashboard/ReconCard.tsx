@@ -8,6 +8,7 @@ import {
   Network,
   Radar,
   Route,
+  Server,
   Wifi,
   XCircle,
   type LucideIcon
@@ -24,7 +25,8 @@ const MODULE_ICONS: Record<ReconModuleId, LucideIcon> = {
   asn: Network,
   geo: MapPin,
   traceroute: Route,
-  rdns: ArrowLeftRight
+  rdns: ArrowLeftRight,
+  http: Server
 }
 
 const MODULE_TITLES: Record<ReconModuleId, string> = {
@@ -35,7 +37,8 @@ const MODULE_TITLES: Record<ReconModuleId, string> = {
   asn: 'ASN Lookup',
   geo: 'Geolocation',
   traceroute: 'Traceroute',
-  rdns: 'Reverse DNS'
+  rdns: 'Reverse DNS',
+  http: 'HTTP Headers'
 }
 
 function StatusBadge({ status }: { status: ReconStatus }): React.JSX.Element {
@@ -246,26 +249,58 @@ function ResultBody({ result }: { result: ReconResult }): React.JSX.Element {
     )
   }
 
+  if (result.moduleId === 'rdns') {
+    const d = result.data
+    return (
+      <div className="text-xs">
+        {d.entries.length === 0 ? (
+          <p className="text-muted-foreground">No PTR records found</p>
+        ) : (
+          <ul className="space-y-0.5">
+            {d.entries.map((e) => (
+              <li key={e.ip}>
+                <span className="text-muted-foreground">{e.ip}: </span>
+                {e.hostname ?? 'No PTR record'}
+              </li>
+            ))}
+          </ul>
+        )}
+        {d.forwardConfirmed !== null && (
+          <p className="mt-1.5 text-muted-foreground">
+            {d.forwardConfirmed ? 'Forward-confirmed match' : 'No forward-confirmed match'}
+          </p>
+        )}
+      </div>
+    )
+  }
+
   const d = result.data
   return (
-    <div className="text-xs">
-      {d.entries.length === 0 ? (
-        <p className="text-muted-foreground">No PTR records found</p>
-      ) : (
-        <ul className="space-y-0.5">
-          {d.entries.map((e) => (
-            <li key={e.ip}>
-              <span className="text-muted-foreground">{e.ip}: </span>
-              {e.hostname ?? 'No PTR record'}
-            </li>
-          ))}
-        </ul>
+    <div className="space-y-1.5 text-xs">
+      <p className="truncate" title={d.url}>
+        <span className="text-muted-foreground">Status: </span>
+        {d.statusCode} {d.statusText}
+      </p>
+      {d.missingSecurityHeaders.length > 0 && (
+        <div>
+          <span className="text-muted-foreground">Missing security headers:</span>
+          <ul className="mt-0.5 flex flex-wrap gap-1">
+            {d.missingSecurityHeaders.map((h) => (
+              <Badge key={h} variant="destructive">
+                {h}
+              </Badge>
+            ))}
+          </ul>
+        </div>
       )}
-      {d.forwardConfirmed !== null && (
-        <p className="mt-1.5 text-muted-foreground">
-          {d.forwardConfirmed ? 'Forward-confirmed match' : 'No forward-confirmed match'}
-        </p>
-      )}
+      <ul className="max-h-32 space-y-0.5 overflow-y-auto">
+        {d.headers.map((h) => (
+          <li key={h.name} className="truncate">
+            <span className="text-muted-foreground">{h.name}: </span>
+            {h.value}
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

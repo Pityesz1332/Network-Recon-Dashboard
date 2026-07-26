@@ -8,7 +8,8 @@ export const RECON_MODULE_IDS: ReconModuleId[] = [
   'asn',
   'geo',
   'traceroute',
-  'rdns'
+  'rdns',
+  'http'
 ]
 
 export const DEFAULT_SCAN_PORTS: number[] = [
@@ -24,7 +25,8 @@ export const TIMEOUTS = {
   geoMs: 8000,
   tracerouteMaxHops: 16,
   tracerouteHopTimeoutMs: 800,
-  tracerouteHardTimeoutMs: 45000
+  tracerouteHardTimeoutMs: 45000,
+  httpHeadersMs: 8000
 } as const
 
 export const LAN_SWEEP = {
