@@ -3,6 +3,7 @@ import {
   FileSearch,
   Globe,
   Loader2,
+  MapPin,
   Network,
   Radar,
   Wifi,
@@ -18,7 +19,8 @@ const MODULE_ICONS: Record<ReconModuleId, LucideIcon> = {
   dns: Globe,
   portscan: Radar,
   whois: FileSearch,
-  asn: Network
+  asn: Network,
+  geo: MapPin
 }
 
 const MODULE_TITLES: Record<ReconModuleId, string> = {
@@ -26,7 +28,8 @@ const MODULE_TITLES: Record<ReconModuleId, string> = {
   dns: 'DNS Lookup',
   portscan: 'Port Scan',
   whois: 'WHOIS',
-  asn: 'ASN Lookup'
+  asn: 'ASN Lookup',
+  geo: 'Geolocation'
 }
 
 function StatusBadge({ status }: { status: ReconStatus }): React.JSX.Element {
@@ -163,21 +166,46 @@ function ResultBody({ result }: { result: ReconResult }): React.JSX.Element {
     )
   }
 
+  if (result.moduleId === 'asn') {
+    const d = result.data
+    return (
+      <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+        <dt className="text-muted-foreground">ASN</dt>
+        <dd>{d.asn !== null ? `AS${d.asn}` : '—'}</dd>
+        <dt className="text-muted-foreground">Org</dt>
+        <dd className="truncate" title={d.asName ?? undefined}>
+          {d.asName ?? '—'}
+        </dd>
+        <dt className="text-muted-foreground">BGP prefix</dt>
+        <dd>{d.bgpPrefix ?? '—'}</dd>
+        <dt className="text-muted-foreground">Country</dt>
+        <dd>{d.countryCode ?? '—'}</dd>
+        <dt className="text-muted-foreground">Registry</dt>
+        <dd>{d.registry ?? '—'}</dd>
+      </dl>
+    )
+  }
+
   const d = result.data
+  const location = [d.city, d.region, d.country].filter(Boolean).join(', ')
   return (
     <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-      <dt className="text-muted-foreground">ASN</dt>
-      <dd>{d.asn !== null ? `AS${d.asn}` : '—'}</dd>
-      <dt className="text-muted-foreground">Org</dt>
-      <dd className="truncate" title={d.asName ?? undefined}>
-        {d.asName ?? '—'}
+      <dt className="text-muted-foreground">Location</dt>
+      <dd className="truncate" title={location || undefined}>
+        {location || '—'}
       </dd>
-      <dt className="text-muted-foreground">BGP prefix</dt>
-      <dd>{d.bgpPrefix ?? '—'}</dd>
-      <dt className="text-muted-foreground">Country</dt>
-      <dd>{d.countryCode ?? '—'}</dd>
-      <dt className="text-muted-foreground">Registry</dt>
-      <dd>{d.registry ?? '—'}</dd>
+      <dt className="text-muted-foreground">Coordinates</dt>
+      <dd>
+        {d.latitude !== null && d.longitude !== null
+          ? `${d.latitude.toFixed(3)}, ${d.longitude.toFixed(3)}`
+          : '—'}
+      </dd>
+      <dt className="text-muted-foreground">Timezone</dt>
+      <dd>{d.timezone ?? '—'}</dd>
+      <dt className="text-muted-foreground">ISP</dt>
+      <dd className="truncate" title={d.isp ?? undefined}>
+        {d.isp ?? '—'}
+      </dd>
     </dl>
   )
 }

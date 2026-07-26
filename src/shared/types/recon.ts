@@ -1,4 +1,4 @@
-export type ReconModuleId = 'ping' | 'dns' | 'portscan' | 'whois' | 'asn'
+export type ReconModuleId = 'ping' | 'dns' | 'portscan' | 'whois' | 'asn' | 'geo'
 
 export type ReconStatus = 'idle' | 'running' | 'success' | 'error'
 
@@ -57,11 +57,24 @@ export interface AsnResultData {
   raw: string
 }
 
+export interface GeoResultData {
+  queriedIp: string
+  country: string | null
+  countryCode: string | null
+  region: string | null
+  city: string | null
+  latitude: number | null
+  longitude: number | null
+  timezone: string | null
+  isp: string | null
+}
+
 export type PingReconResult = ReconResultBase<'ping', PingResultData>
 export type DNSReconResult = ReconResultBase<'dns', DNSResultData>
 export type PortScanReconResult = ReconResultBase<'portscan', PortScanResultData>
 export type WhoisReconResult = ReconResultBase<'whois', WhoisResultData>
 export type AsnReconResult = ReconResultBase<'asn', AsnResultData>
+export type GeoReconResult = ReconResultBase<'geo', GeoResultData>
 
 export type ReconResult =
   | PingReconResult
@@ -69,3 +82,4 @@ export type ReconResult =
   | PortScanReconResult
   | WhoisReconResult
   | AsnReconResult
+  | GeoReconResult

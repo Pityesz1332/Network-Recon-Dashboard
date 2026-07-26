@@ -10,7 +10,8 @@ const MODULE_NAMES: Record<ReconModuleId, string> = {
   dns: 'DNS Lookup',
   portscan: 'Port Scan',
   whois: 'WHOIS',
-  asn: 'ASN Lookup'
+  asn: 'ASN Lookup',
+  geo: 'Geolocation'
 }
 
 function idleResult(moduleId: ReconModuleId): ReconResult {
