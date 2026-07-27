@@ -2,6 +2,8 @@ import { ipcRenderer, type IpcRendererEvent } from 'electron'
 import {
   IPC,
   type AppBridge,
+  type ExportPdfRequest,
+  type ExportPdfResponse,
   type LanDeviceFoundEvent,
   type LanSweepCompleteEvent,
   type LanSweepStartResponse,
@@ -53,6 +55,12 @@ export const api: AppBridge = {
         cb(payload)
       ipcRenderer.on(IPC.LanSweepComplete, listener)
       return () => ipcRenderer.removeListener(IPC.LanSweepComplete, listener)
+    }
+  },
+
+  report: {
+    exportPdf(payload: ExportPdfRequest): Promise<ExportPdfResponse> {
+      return ipcRenderer.invoke(IPC.ReportExportPdf, payload)
     }
   }
 }

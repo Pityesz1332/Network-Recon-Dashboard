@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react'
+import { FileDown, Loader2 } from 'lucide-react'
 import { Button } from '@renderer/components/ui/button'
 import { Input } from '@renderer/components/ui/input'
 import { useScanStore } from '@renderer/stores/scan.store'
@@ -7,11 +7,19 @@ export function ScanPanel(): React.JSX.Element {
   const target = useScanStore((s) => s.target)
   const validationError = useScanStore((s) => s.validationError)
   const isScanning = useScanStore((s) => s.isScanning)
+  const isExporting = useScanStore((s) => s.isExporting)
+  const exportError = useScanStore((s) => s.exportError)
+  const exportedPath = useScanStore((s) => s.exportedPath)
+  const hasResults = useScanStore((s) =>
+    Object.values(s.results).some((r) => r.status === 'success' || r.status === 'error')
+  )
   const setTarget = useScanStore((s) => s.setTarget)
   const startScan = useScanStore((s) => s.startScan)
   const cancelScan = useScanStore((s) => s.cancelScan)
+  const exportPdf = useScanStore((s) => s.exportPdf)
 
   const canScan = target.trim().length > 0 && !validationError && !isScanning
+  const canExport = hasResults && !isScanning && !isExporting
 
   return (
     <div className="border-b border-border/60 bg-card/20 px-6 py-4 backdrop-blur-sm">
@@ -39,7 +47,23 @@ export function ScanPanel(): React.JSX.Element {
         <Button type="button" variant="outline" disabled={!isScanning} onClick={cancelScan}>
           Cancel
         </Button>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={!canExport}
+          onClick={() => void exportPdf()}
+        >
+          {isExporting ? <Loader2 className="animate-spin" /> : <FileDown />}
+          Export PDF
+        </Button>
       </form>
+
+      {exportError && <p className="mt-2 text-xs text-destructive">{exportError}</p>}
+      {exportedPath && (
+        <p className="mt-2 truncate text-xs text-muted-foreground" title={exportedPath}>
+          Report saved to {exportedPath}
+        </p>
+      )}
     </div>
   )
 }

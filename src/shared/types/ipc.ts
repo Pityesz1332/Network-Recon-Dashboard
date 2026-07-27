@@ -9,7 +9,8 @@ export const IPC = {
   LanSweepStart: 'lan:sweep:start',
   LanSweepCancel: 'lan:sweep:cancel',
   LanDeviceFound: 'lan:device:found',
-  LanSweepComplete: 'lan:sweep:complete'
+  LanSweepComplete: 'lan:sweep:complete',
+  ReportExportPdf: 'report:export:pdf'
 } as const
 
 export interface ScanStartRequest {
@@ -73,4 +74,23 @@ export interface LanBridge {
   }
 }
 
-export type AppBridge = ReconBridge & LanBridge
+export interface ExportPdfRequest {
+  target: string
+  startedAt: number
+  finishedAt: number | null
+  totalDurationMs: number | null
+  results: ReconResult[]
+}
+
+export type ExportPdfResponse =
+  | { ok: true; filePath: string }
+  | { ok: false; canceled: true }
+  | { ok: false; canceled: false; error: string }
+
+export interface ReportBridge {
+  report: {
+    exportPdf(payload: ExportPdfRequest): Promise<ExportPdfResponse>
+  }
+}
+
+export type AppBridge = ReconBridge & LanBridge & ReportBridge

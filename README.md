@@ -2,7 +2,7 @@
 
 A cross-platform desktop application for gathering reconnaissance information about an IPv4 address or hostname from a single interface. Built with Electron, React, and TypeScript around a plugin-based recon engine, so new scan capabilities can be added without touching existing code.
 
-> **Status: early prototype.** The architecture (IPC contract, plugin engine, module abstraction) is in place and functional, with three recon modules implemented end-to-end. See [Roadmap](#roadmap) for what's not built yet.
+> **Status: early prototype.** The architecture (IPC contract, plugin engine, module abstraction) is in place and functional, with nine recon modules implemented end-to-end plus a LAN discovery view. See [Roadmap](#roadmap) for what's not built yet.
 
 ---
 
@@ -11,14 +11,22 @@ A cross-platform desktop application for gathering reconnaissance information ab
 **Implemented**
 
 - Enter an IPv4 address or hostname and run a scan against it
-- Three recon modules running in parallel, each as an independent plugin:
+- Nine recon modules running in parallel, each as an independent plugin:
   - **Ping** — reachability, packet loss, round-trip time
-  - **DNS Lookup** — A/AAAA/CNAME resolution, reverse PTR lookups
+  - **DNS Lookup** — A/AAAA/CNAME resolution
   - **Port Scan** — TCP connect scan over a common port list, behind a swappable provider abstraction
+  - **WHOIS** — registrar, creation/expiry dates, name servers
+  - **ASN Lookup** — announcing AS, org, BGP prefix, country, registry
+  - **Geolocation** — country/region/city, coordinates, timezone, ISP
+  - **Traceroute** — per-hop address and round-trip time to the target
+  - **Reverse DNS** — PTR lookups with forward-confirmation
+  - **HTTP Headers** — response headers with missing-security-header detection
 - Results stream in per-module as each one finishes — fast modules display immediately, no waiting on the slowest one
 - Cancel a scan in progress (kills the ping process, destroys open sockets, aborts in-flight lookups)
+- **LAN discovery view** — detects the local subnet, sweeps it for live hosts, and resolves vendor (via OUI) and hostname per device
 - Client- and server-side input validation (rejects malformed IPs/hostnames before any module runs)
 - Dark-themed dashboard UI (shadcn/ui + Tailwind CSS)
+- **PDF report export** — save a single-target scan as a print-formatted report (summary header plus a section per module, including the ones that failed or never ran), via a native save dialog
 
 **Not yet implemented** — see [Roadmap](#roadmap).
 
@@ -34,6 +42,7 @@ React UI  →  Electron IPC  →  Recon Engine  →  Modules  →  Results  → 
 - **Plugin-based recon modules.** Every scan capability implements a common `ReconModule` interface (`id`, `name`, `execute(ctx)`), registered into a `ModuleRegistry` and orchestrated by a `ReconEngine` that runs all modules concurrently and streams each result back independently.
 - **Provider abstraction for port scanning.** The port scan module delegates to a `PortScanProvider` interface; the current implementation (`NodeSocketProvider`) does a TCP connect scan with `node:net`, but the module and UI have no knowledge of that — a future `NmapProvider` could be swapped in without changing either.
 - **Event-push IPC, not polling.** Starting a scan returns an immediate acknowledgement; the main process then pushes a `recon:module:update` event per module as it completes and a `recon:scan:complete` event once everything settles.
+- **Reports render through Chromium's print pipeline.** The main process builds a print-styled HTML document from the scan results and prints it in an offscreen window (`webContents.printToPDF`) that has scripts and network access switched off — no PDF library dependency, and the output stays selectable text rather than a screenshot.
 - **Input validated on both sides.** A shared Zod schema validates the target in the renderer (for instant UX feedback) and again in the main process (since the renderer is untrusted input from main's perspective) before it ever reaches a module.
 - **No shell interpolation.** The ping module uses `child_process.spawn` with an argv array — never a shell string — to eliminate command injection risk.
 
@@ -93,14 +102,13 @@ pnpm build:linux   # Linux
 
 Planned, not yet built:
 
-- Additional recon modules: WHOIS, Traceroute, Geolocation, ASN
-- PDF report export
 - Animations and skeleton loading states (Framer Motion)
 - Multi-page navigation (React Router)
 - Full shadcn/ui component set
 - Automated test suite (Vitest)
 - Scan history and saved targets
 - `NmapProvider` as an alternative port scan backend
+- PDF export for the LAN discovery view
 
 ---
 
@@ -110,6 +118,7 @@ Planned, not yet built:
 - `contextIsolation` is enabled; the renderer only sees a typed, minimal API surface.
 - User-supplied targets are validated (IPv4/hostname format) before any scan runs, on both the renderer and main-process sides.
 - Process invocation always uses argument arrays, never shell string concatenation.
+- Report values coming from remote servers (WHOIS text, HTTP header values, PTR hostnames) are HTML-escaped before they reach the print window, which itself runs with JavaScript disabled.
 
 ## License
 
